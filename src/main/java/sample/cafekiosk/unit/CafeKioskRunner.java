@@ -16,6 +16,7 @@ public class CafeKioskRunner {
         System.out.println("라떼 추가");
 
         int totalPrice = cafeKiosk.calculateTotalPrice();
+        String test = "test";
         System.out.println("총주문 가격" + totalPrice);
 
         Order order = cafeKiosk.createOrder(LocalDateTime.now());
