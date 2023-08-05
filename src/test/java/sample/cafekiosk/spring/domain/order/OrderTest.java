@@ -68,6 +68,17 @@ class OrderTest {
 
     }
 
+    @DisplayName("")
+    @Test
+    void test() {
+        // given
+
+        // when
+
+        // then
+
+     }
+
     private Product createProduct(String productNumber, int price) {
         return Product.builder()
                 .type(HANDMADE)
