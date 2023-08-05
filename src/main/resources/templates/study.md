@@ -26,8 +26,29 @@
 
 ### 4. 테스트는 문서?
 + 프로덕션 코드를 설명해주는 문서, 프로덕션 코드를 이해하는 시각, 관점을 다양화, 팀 차원에서 봤을 때 팀의 자산이 될 수 있다.
++ @Displayname을 활용해 어떤 테스트인지를 명시하자. 자세할수록 좋다. 완전한 문장형태로 ex)음료 1개를 추가하면 주문 목록에 담긴다. 테스트 행위에 대한 결과까지 적는게 바람직하다. 항상 구체적으로
++ 도메인 용어를 사용해 한층 추상화된 내용을 담자. 실패 -> 주문을 생성할 수 없다. 테스트 현상을 중점으로 기술x
++ BDD(Behavior Driven Develpment) - TDD에서 파생된 기법, 함수단위 테스트보단 시나리오 기반 테스트케이스 자체에 집중, 비개발자가 이해할 정도의 추상화 수준, given-when-then을 활용
+
+### Spring & JPA 테스트
++ 통합 테스트 - 여러 모듈이 협력하는 기능을 테스트, 작은 범위의 테스트만으론 기능 전체의 신뢰성 보장X, 풍부한 단위 테스트 + 큰 기능단위의 통합테스트
++ 레파지토리 테스트는 계층관점에서 봤을 때 단위 테스트라고 볼 수 있다.
++ @DataJpaTest - jpa관련 테스트만 할 수 있게 지원해주기 때문에 @SpringBootTest보다 가볍다.
++ 비즈니스 레이어 - Persistence Layer와의 상호작용을 통해 비즈니스 로직을 전개, 트랜잭션 보장
 + 
 
 ### Tip
 + lombok 사용가이드 - @Data, @Setter, @AllArgsConstructor 사용 지양, 양방향 연관관계시 @ToString 순환참조 문제
-+ 
++ 테스트 작성시  builder패턴을 이용해 생성시 코드가 너무 길어지면 메소드로 추출해 기본값을 넣어주고 필요한 값들만 매개 변수로 받아준다.
+```java
+private Product createProduct(ProductType type, String productNumber, int price) {
+        return Product.builder()
+                .type(type)
+                .productNumber(productNumber)
+                .price(price)
+                .sellingStatus(SELLING)
+                .name("메뉴 이름")
+                .build();
+     }
+```
++ isEqualByComparingTo() enum값 비교시에 유용하다.
