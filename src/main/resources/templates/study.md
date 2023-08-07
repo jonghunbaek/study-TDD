@@ -35,6 +35,11 @@
 + 레파지토리 테스트는 계층관점에서 봤을 때 단위 테스트라고 볼 수 있다.
 + @DataJpaTest(@Transactional 지원) - jpa관련 테스트만 할 수 있게 지원해주기 때문에 @SpringBootTest(@Transactional 미지원)보다 가볍다.
 + 비즈니스 레이어 - Persistence Layer와의 상호작용을 통해 비즈니스 로직을 전개, 트랜잭션 보장
++ Presentation Layer에선 하위 비즈니스, 펄시스턴스 레이어를 mocking처리해 테스트
+
+### MockMvc
++ 테스트할 때 의존관계의 존재들을 대체하기 위한 방법
++ Mock(가짜 객체)를 사용해 스프링 MVC동작을 재현할 수 있는 테스트 프레임워크
 + 
 
 ### Tip
@@ -55,3 +60,4 @@ private Product createProduct(ProductType type, String productNumber, int price)
 + repository.deleteAll() vs repository.deleteAllInBatch()
 + 서비스에서 유효성 체크, 도메인에서 유효성 체크는 완전히 다른 상황이다. 다시말해 중복이 아니다.
 + @Transactional에 대한 깊은 이해를 바탕으로 사용해야 한다.
++ 서비스에서 로직이 많지 않을 땐 Repository 테스트와 크게 차이가 없다. 하지만 비슷하더라도 작성해 주는 것이 추후 기능확장을 할 때 유리하다.
