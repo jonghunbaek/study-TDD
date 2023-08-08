@@ -1,19 +1,29 @@
 package sample.cafekiosk.spring.api.controller.product.dto.request;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import sample.cafekiosk.spring.domain.product.Product;
 import sample.cafekiosk.spring.domain.product.ProductSellingStatus;
 import sample.cafekiosk.spring.domain.product.ProductType;
 
+@NoArgsConstructor
 @Getter
 public class ProductCreateRequest {
 
+    @NotNull
     private ProductType type;
+
+    @NotNull
     private ProductSellingStatus sellingStatus;
+
+    @NotBlank
     private String name;
+
+    @Positive
     private int price;
 
     @Builder

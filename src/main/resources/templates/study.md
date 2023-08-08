@@ -40,7 +40,9 @@
 ### MockMvc
 + 테스트할 때 의존관계의 존재들을 대체하기 위한 방법
 + Mock(가짜 객체)를 사용해 스프링 MVC동작을 재현할 수 있는 테스트 프레임워크
-+ 
++ @WebMvcTest - 컨트롤러에 있는 빈만 컨테이너에 올려 테스트를 경량화 시킴
++ @MockBean - 
+
 
 ### Tip
 + lombok 사용가이드 - @Data, @Setter, @AllArgsConstructor 사용 지양, 양방향 연관관계시 @ToString 순환참조 문제
@@ -60,4 +62,9 @@ private Product createProduct(ProductType type, String productNumber, int price)
 + repository.deleteAll() vs repository.deleteAllInBatch()
 + 서비스에서 유효성 체크, 도메인에서 유효성 체크는 완전히 다른 상황이다. 다시말해 중복이 아니다.
 + @Transactional에 대한 깊은 이해를 바탕으로 사용해야 한다.
++ 속성 중 readOnly = true : 
++ CRUD중 CUD 동작 X, JPA: CUD스냅샷 저장, 변경 감지X -> 성능향상
++ CQRS(Command/Query분리) : 
 + 서비스에서 로직이 많지 않을 땐 Repository 테스트와 크게 차이가 없다. 하지만 비슷하더라도 작성해 주는 것이 추후 기능확장을 할 때 유리하다.
++ 직렬화, 역직렬화를 도와준느 ObjectMapper는 해당 작업을 할 때 객체의 기본 생성자를 필요로 한다.
++ 컨트롤러는 파라미터의 유효성 체크가 주 역할 이다.
