@@ -68,3 +68,9 @@ private Product createProduct(ProductType type, String productNumber, int price)
 + 서비스에서 로직이 많지 않을 땐 Repository 테스트와 크게 차이가 없다. 하지만 비슷하더라도 작성해 주는 것이 추후 기능확장을 할 때 유리하다.
 + 직렬화, 역직렬화를 도와준느 ObjectMapper는 해당 작업을 할 때 객체의 기본 생성자를 필요로 한다.
 + 컨트롤러는 파라미터의 유효성 체크가 주 역할 이다.
++ @NotNull - "", " " 가능
++ @NotEmpty - " " 가능, ""불가능
++ @NotBlank - 공백, 빈문자열 전부 안돼
++ 유효성 체크 범위와 책임에 대한 고민이 필요 - Controller단에선 좀 더 포괄적인(@NotBlank같은)검증을 Service에선 좀 더 구체적인(글자수 20자)검증을 하는 식으로
++ 매우중요!!!!!!!!!! -> 하위레이어가 상위레이어를 알고있는것은 좋지 않다. Controller에서 사용하는 dto를 서비스에서까지 사용하게 되면 의존관계가 생기므로 dto를 별도로 만들어주는 것이 좋다.
++ 이로 인해 얻어지는 효과는 이후 컨틀로러 - 서비스간 모듈 분리시에 유리하고, @BeanValidation의 책임을 컨트롤러에 한정시킬 수 있다.
