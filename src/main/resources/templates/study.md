@@ -41,7 +41,7 @@
 + 테스트할 때 의존관계의 존재들을 대체하기 위한 방법
 + Mock(가짜 객체)를 사용해 스프링 MVC동작을 재현할 수 있는 테스트 프레임워크
 + @WebMvcTest - 컨트롤러에 있는 빈만 컨테이너에 올려 테스트를 경량화 시킴
-+ @MockBean - 
++ @MockBean
 
 
 ### Tip
@@ -74,3 +74,8 @@ private Product createProduct(ProductType type, String productNumber, int price)
 + 유효성 체크 범위와 책임에 대한 고민이 필요 - Controller단에선 좀 더 포괄적인(@NotBlank같은)검증을 Service에선 좀 더 구체적인(글자수 20자)검증을 하는 식으로
 + 매우중요!!!!!!!!!! -> 하위레이어가 상위레이어를 알고있는것은 좋지 않다. Controller에서 사용하는 dto를 서비스에서까지 사용하게 되면 의존관계가 생기므로 dto를 별도로 만들어주는 것이 좋다.
 + 이로 인해 얻어지는 효과는 이후 컨틀로러 - 서비스간 모듈 분리시에 유리하고, @BeanValidation의 책임을 컨트롤러에 한정시킬 수 있다.
++ + Layered Architecture의 단점 - 도메인(엔티티)객체와 db와 강결합
++ 이를 위해 Hexagonal Architecture가 나오게 된다. - 시스템이 커질 경우
++ 단위 테스트 vs 통합 테스트
++ @SpringBootTest vs @DataJpaTest vs @WebMvcTest
++ Optimistic Lock, Pessimistic Lock
