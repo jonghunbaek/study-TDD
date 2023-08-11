@@ -42,7 +42,11 @@
 + Mock(가짜 객체)를 사용해 스프링 MVC동작을 재현할 수 있는 테스트 프레임워크
 + @WebMvcTest - 컨트롤러에 있는 빈만 컨테이너에 올려 테스트를 경량화 시킴
 + @MockBean
-
++ MockBean을 통해 Mock에 대한 행위를 정의한 것을 stubbing이라고 한다.
++ Test Double - Dummy(깡통 객체), Fake(단순형태, 동일기능, 프로덕션에 쓰긴 어려운 객체 - ex repository), Stub(테스트 요청에 미리 준비한 것을 제공하는 객체)
++ Spy(stub이나 호출내용 기록, 일부는 실제처럼 일부는 Stubbing할 수 있는 객체), Mock(행위에 대한 기대를 명세하고 그에 따라 동작하도록 만든 객체)
++ Stub vs Mock - 상태 검증 vs 행위 검증
++ @Mock vs @Spy
 
 ### Tip
 + lombok 사용가이드 - @Data, @Setter, @AllArgsConstructor 사용 지양, 양방향 연관관계시 @ToString 순환참조 문제
@@ -79,3 +83,4 @@ private Product createProduct(ProductType type, String productNumber, int price)
 + 단위 테스트 vs 통합 테스트
 + @SpringBootTest vs @DataJpaTest vs @WebMvcTest
 + Optimistic Lock, Pessimistic Lock
++ mail 전송같은 테스트에선 @Transactional을 안붙이는 것이 좋다.
