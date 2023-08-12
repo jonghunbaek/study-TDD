@@ -43,10 +43,38 @@
 + @WebMvcTest - 컨트롤러에 있는 빈만 컨테이너에 올려 테스트를 경량화 시킴
 + @MockBean
 + MockBean을 통해 Mock에 대한 행위를 정의한 것을 stubbing이라고 한다.
+
+### Test Double
 + Test Double - Dummy(깡통 객체), Fake(단순형태, 동일기능, 프로덕션에 쓰긴 어려운 객체 - ex repository), Stub(테스트 요청에 미리 준비한 것을 제공하는 객체)
 + Spy(stub이나 호출내용 기록, 일부는 실제처럼 일부는 Stubbing할 수 있는 객체), Mock(행위에 대한 기대를 명세하고 그에 따라 동작하도록 만든 객체)
 + Stub vs Mock - 상태 검증 vs 행위 검증
-+ @Mock vs @Spy
++ @Mock vs @Spy - 전체가 Mock이냐 일부는 실제 객체르 사용하냐의 차이
++ @InjectMock을 통해 의존성 주입처럼 Mock을 활용할 수 있다.
+```java
+@Mock
+private MailSendClient mailSendClient;
+
+@Mock
+private MailSendHistoryRepository mailSendHistoryRepository;
+
+@InjectMocks
+private MailService mailService;
+```
++ BDDMockito - Mockito의 부자연스러운 메소드명을 자연스럽게 바꿔준다. 이외 기능은 동일
+
+### Classicist vs Mockist
++ 실제 객체 사용 vs 목 객체 사용
++ Classicist - 꼭 필요한 경우에만 Mock객체를 사용하자.
++ Mockist - Mock객체로만 테스트 코드를 작성하자.
+
+### 좋은 테스트 작성하기
++ 코딩은 글쓰기와 같다. 한 문단에 한 주제처럼 테스트 하나엔 하나의 주제만 테스트해야 한다.
++ 분기문, 반복문 같은 논리구조가 들어갔다는 것은 두 가지 이상의 주제를 내포한다는 방증이다.
++ 테스트 작성 시 모든 환경을 완벽하게 제어할 수 있는지 고민을 끊임없이 해야 한다.
++ 테스트 환경의 독립성을 보장하자. - given절에서 테스트가 깨지면 안된다가 적절한 예시 
++ 테스트간의 독립성을 보장하자 - 공유자원 사용금지 또는 @AfterEach등을 활용해 테스트 끝날 때마다 clean작업을 진행
++ Test Fixture - 테스트를 위해 원하는 사앹로 고정시킨 일련의 객체
++ 
 
 ### Tip
 + lombok 사용가이드 - @Data, @Setter, @AllArgsConstructor 사용 지양, 양방향 연관관계시 @ToString 순환참조 문제
