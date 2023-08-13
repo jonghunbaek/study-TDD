@@ -73,8 +73,108 @@ private MailService mailService;
 + 테스트 작성 시 모든 환경을 완벽하게 제어할 수 있는지 고민을 끊임없이 해야 한다.
 + 테스트 환경의 독립성을 보장하자. - given절에서 테스트가 깨지면 안된다가 적절한 예시 
 + 테스트간의 독립성을 보장하자 - 공유자원 사용금지 또는 @AfterEach등을 활용해 테스트 끝날 때마다 clean작업을 진행
-+ Test Fixture - 테스트를 위해 원하는 사앹로 고정시킨 일련의 객체
-+ 
++ **Test Fixture** 
+```
+0. 테스트를 위해 원하는 상태로 고정시킨 일련의 객체 - given절에 생성한 객체들이 대표적인 예
+1. @BeforeAll, @BeforeEach의 단점 - 테스트와의 결합도가 높아져 수정 시 모든 테스트에 영향을 주게 된다. 또 문서로써의 역할을 하기 어려움(given절을 생략하기에)
+1-1. 단, 각 테스트에서 전혀 몰라도 이해하는데 문제가 없고, 수정해도 모든 테스트에 영향을 주지 않으면 사용해도 괜찮다. 
+
+2. 객체를 생성할 때는 테스트 클래스마다 생성 메서드를 만들어 필요한 파라미터만 주입해주는 방법이 좋다. 
+
+3. Fixture를 만들기 위해 빌더를 남용하는 것은 코드의 복잡도가 올라가니 지양하자.
+```
++ **Test Fixture Cleansing**
+```
+deleteAll vs deleteAllInBatch
+1. deleteAllInBatch - 테이블의 전체 데이터를 한번에 삭제 한다.
+2. deleteAll - select -> delete(where절을 사용해 하나씩)을 통해 연관된 테이블의 데이터도 삭제해준다.
+3. 성능 이슈가 있음 - 2번의 경우 연관관계로 매핑된 테이블까지 같이 지우고, 하나씩 삭제하기 때문에 다수의 쿼리 전달로 비용이 많이 든다.
+
+@Transactional
+1. 사이드 이펙트만 고려하면 @Transactional을 사용하는 것이 편하다.
+```
++ **@ParameterizedTest** - 값만 변경해서 다양한 테스트를 하고 싶을 때 사용(@CsvSource와 같은 소스 어노테이션을 활용)
+```java
+@DisplayName("상품 타입이 재고 관련 타입인지를 체크한다.")
+@CsvSource({"HANDMADE,false","BOTTLE,true","BAKERY,true"})
+@ParameterizedTest
+void containsStockType4(ProductType productType, boolean expected) {
+    // when
+    boolean result = ProductType.containsStockType(productType);
+
+    // then
+    assertThat(result).isEqualTo(expected);
+    }
+```
+```java
+private static Stream<Arguments> provideProductTypesForCheckingStockType() {
+    return Stream.of(
+        Arguments.of(ProductType.HANDMADE, false),
+        Arguments.of(ProductType.BOTTLE, true),
+        Arguments.of(ProductType.BAKERY, true)
+    );
+}
+
+@DisplayName("상품 타입이 재고 관련 타입인지를 체크한다.")
+@MethodSource("provideProductTypesForCheckingStockType")
+@ParameterizedTest
+void containsStockType5(ProductType productType, boolean expected) {
+    // when
+    boolean result = ProductType.containsStockType(productType);
+
+    // then
+    assertThat(result).isEqualTo(expected);
+}
+```
++ [Junit5 Parmeterized Tests](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests)
++ **@DynamicTest** - 테스트에 시나리오를 짜려고 할 때. 예를 들어 순차적으로 테스트를 하며 검증해야 할 경우
+```java
+@DisplayName("재고 차감 시나리오")
+@TestFactory
+Collection<DynamicTest> stockDeductionDynamicTest() {
+    // given
+    Stock stock = Stock.create("001", 1);
+
+    return List.of(
+        DynamicTest.dynamicTest("재고를 주어진 개수만큼 차감할 수 있다.", () -> {
+            // given
+            int quantity = 1;
+
+            // when
+            stock.deductQuantity(quantity);
+
+            // then
+            assertThat(stock.getQuantity()).isZero();
+        }),
+        DynamicTest.dynamicTest("재고보다 많은 수의 수량으로 차감 시도하는 경우 예외가 발생한다.", () -> {
+            // given
+            int quantity = 1;
+
+            // when // then
+            assertThatThrownBy(() -> stock.deductQuantity(quantity))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("차감할 재고 수량이 없습니다.");
+        })
+    );
+}
+```
++ 테스트 수행 비용 고려 - 테스트 환경을 공통으로 비슷하게 만들어 시간 단축. 예를 들어 추상 클래스를 만들어 상속받게 하는 방법
++ 이 때, Mock객체를 사용하는 클래스는 서버를 새로 띄워야 하기 때문에 1. MockBean을 상위클래스로 이전 // 2. 테스트환경을 여러개로 나누는 방법들이 있다.
++ Controller는 테스트 환경을 따로 만들어 주는게 유리 - Service-Repository와 보통 분리해서 환경을 구축
++ private에 대한 테스트 - 테스트를 작성할 필요 없다. 하지만 꼭 필요하다면 객체의 책임을 분리해야 할 시점인지 고민해 보자.
++ 프로덕트엔 필요없지만 테스트에만 필요한 메서드는 작성해도 되는가? - 남용x 충분한 고민을 거쳐 다양하게 사용될 수 있는 상황에 적용하자. 보수적인 관점으로
++ **정리**
+```
+1. 테스트 1개에 목적은 1개만
+2. given절에서 생성하는 객체는 완벽하게 제어(ex - 시간, 랜덤 값 등 상황에 따라 변하는 것들은 지양)
+3. 테스트 <-> 테스트 독립성 보장, 테스트 환경의 독립성을 보장
+4. Test Fixture(공유변수 사용지양 - @BeforeEach,@BeforeAll, 객체 생성 시 필요 파라미터만 주입, 빌더패턴 남용 지양, given절 내용을 명확하게)
+5. @Parameterized, @DynamicTest - 동적인 테스트를 하고 싶을 때 활용하자.
+6. deleteAll vs deleteAllInBatch 장단점
+7. 테스트 수행 비용을 고려해 환경을 통합 - 추상 클래스를 만들어 상속받도록 유도. 즉, 스프링부트가 실행되는 횟수를 감소시키는게 목적
+8. private 메소드 테스트를 해야할지에 대한 고민
+9. 테스트 작성에만 필요한 프로덕션 코드가 있을 수 있다. 하지만 충분하게 고려 후 사용하자.
+```
 
 ### Tip
 + lombok 사용가이드 - @Data, @Setter, @AllArgsConstructor 사용 지양, 양방향 연관관계시 @ToString 순환참조 문제
