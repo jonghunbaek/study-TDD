@@ -49,7 +49,6 @@ class CafeKioskTest {
         CafeKiosk cafeKiosk = new CafeKiosk();
         Americano americano = new Americano();
 
-        cafeKiosk.add(americano,0);
         assertThatThrownBy(() -> cafeKiosk.add(americano, 0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("음료는 1잔이상 주문해야됌");

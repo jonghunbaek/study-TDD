@@ -176,6 +176,42 @@ Collection<DynamicTest> stockDeductionDynamicTest() {
 9. 테스트 작성에만 필요한 프로덕션 코드가 있을 수 있다. 하지만 충분하게 고려 후 사용하자.
 ```
 
+### Spring REST Docs
++ 테스트 코드를 통한 API 문서 자동화 도구
++ API 명세를 문서로 만들고 외부에 제공함으로써 협업을 원활하게 만들어 준다.
++ 기본적으로 AsciiDoc을 사용해 문서를 작성
++ **Rest Docs vs Swagger**
+```
+1. REST Docs - 테스트를 통과해야 문서가 만들어짐, 프로덕션 코드에 비침투적, 코드양이 많고 설정이 어려움
+2. Swagger - 적용이 쉽고, 문서에서 API 호출을 테스트 가능, 프로덕션 코드에 침투적이고 테스트코드와 무관해 신뢰성이 떨어짐
+```
++ REST Docs 생성 방법 두 가지
+```java
+@SpringBootTest
+class Test {
+    
+    @BeforeEach
+    void setUp(WebApplicationContext webApplicationContext,
+               RestDocumentationContextProvider provider) {
+    
+          this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                  .apply(documentationConfiguration(provider))
+                  .build();
+    }
+}
+
+class Test {
+
+    @BeforeEach
+    void setUp(RestDocumentationContextProvider provider) {
+
+        this.mockMvc = MockMvcBuilders.standaloneSetup(문서를 만들 컨트롤러 넣기)
+                .apply(documentationConfiguration(provider))
+                .build();
+    }
+}
+```
+
 ### Tip
 + lombok 사용가이드 - @Data, @Setter, @AllArgsConstructor 사용 지양, 양방향 연관관계시 @ToString 순환참조 문제
 + 테스트 작성시  builder패턴을 이용해 생성시 코드가 너무 길어지면 메소드로 추출해 기본값을 넣어주고 필요한 값들만 매개 변수로 받아준다.
@@ -212,3 +248,4 @@ private Product createProduct(ProductType type, String productNumber, int price)
 + @SpringBootTest vs @DataJpaTest vs @WebMvcTest
 + Optimistic Lock, Pessimistic Lock
 + mail 전송같은 테스트에선 @Transactional을 안붙이는 것이 좋다.
++ 학습 테스트 - 외부 라이브러리, 프레임워크 등을 테스트 코드로 학습, 공식문서로 학습하기 보단 재밌게 할 수 있다. 즉, 테스트코드를 학습용으로 사용할 수 있다.
